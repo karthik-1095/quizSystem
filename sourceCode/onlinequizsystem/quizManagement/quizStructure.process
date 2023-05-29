@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx2="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd3">
+    <xsd:import namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd3" schemaLocation="/schemas/quizManagement.xsd"/>
+    <pd:name>quizManagement/quizStructure.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="payload" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>148</pd:startX>
+    <pd:startY>62</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="exists($_error/ns1:ErrorReport)">
+                <responseMessage>
+                    <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                </responseMessage>
+            </xsl:when>
+            <xsl:otherwise>
+                <responseMessage>
+                    <xsl:value-of select="$JDBC-Update/jdbcUpdateActivityOutput/noOfUpdates"/>
+                </responseMessage>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="responseMessage" type="xsd:string"/>
+    </pd:endType>
+    <pd:endX>641</pd:endX>
+    <pd:endY>57</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1680149912736</pd:targetNamespace>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>310</pd:x>
+        <pd:y>52</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityOutputEditor ref="pfx:quizmanagement"/>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/payload"/>
+                </jsonString>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JDBC Update">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>448</pd:x>
+        <pd:y>59</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>INSERT INTO scheduled_quiz (teams_count, questions_count, rounds_count)
+VALUES (?, ?, ?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>teams_count</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>questions_count</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>rounds_count</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <teams_count>
+                    <xsl:value-of select="tib:concat-sequence-format($JDBC-Query/resultSet/Record/TEAMID, ',')"/>
+                </teams_count>
+                <questions_count>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:quizmanagement/pfx:questions"/>
+                </questions_count>
+                <rounds_count>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:quizmanagement/pfx:rounds"/>
+                </rounds_count>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="startLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>227</pd:x>
+        <pd:y>151</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx2:LogExceptionHandler>
+                <pfx2:ApplictionName>
+                    <xsl:value-of select="'quiz management'"/>
+                </pfx2:ApplictionName>
+                <pfx2:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </pfx2:ProcessName>
+                <pfx2:LogType>
+                    <xsl:value-of select="'start log'"/>
+                </pfx2:LogType>
+                <pfx2:status>
+                    <xsl:value-of select="'success'"/>
+                </pfx2:status>
+                <pfx2:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx2:CorrelationID>
+                <pfx2:MessageType>
+                    <xsl:value-of select="'request payload'"/>
+                </pfx2:MessageType>
+                <pfx2:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx2:Timestamp>
+                <pfx2:PAYLOAD>
+                    <xsl:value-of select="$Start/payload"/>
+                </pfx2:PAYLOAD>
+            </pfx2:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="endLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>564</pd:x>
+        <pd:y>151</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx2:LogExceptionHandler>
+                <pfx2:ApplictionName>
+                    <xsl:value-of select="'quiz management'"/>
+                </pfx2:ApplictionName>
+                <pfx2:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </pfx2:ProcessName>
+                <pfx2:LogType>
+                    <xsl:value-of select="'end log'"/>
+                </pfx2:LogType>
+                <pfx2:status>
+                    <xsl:value-of select="'success'"/>
+                </pfx2:status>
+                <pfx2:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx2:CorrelationID>
+                <pfx2:MessageType>
+                    <xsl:value-of select="'response payload'"/>
+                </pfx2:MessageType>
+                <pfx2:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx2:Timestamp>
+                <pfx2:PAYLOAD>
+                    <xsl:value-of select="$JDBC-Update/jdbcUpdateActivityOutput/noOfUpdates"/>
+                </pfx2:PAYLOAD>
+            </pfx2:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>388</pd:x>
+        <pd:y>267</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="errorLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>584</pd:x>
+        <pd:y>266</pd:y>
+        <config>
+            <processName>/processes/errorLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx2:ErrorLogHandler>
+                <pfx2:ApplictionName>
+                    <xsl:value-of select="'quiz management'"/>
+                </pfx2:ApplictionName>
+                <pfx2:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </pfx2:ProcessName>
+                <pfx2:LogType>
+                    <xsl:value-of select="'error log'"/>
+                </pfx2:LogType>
+                <pfx2:status>
+                    <xsl:value-of select="'failed'"/>
+                </pfx2:status>
+                <pfx2:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx2:CorrelationID>
+                <pfx2:MessageType>
+                    <xsl:value-of select="'error message'"/>
+                </pfx2:MessageType>
+                <pfx2:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx2:Timestamp>
+                <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                    <pfx2:ErrorCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </pfx2:ErrorCode>
+                </xsl:if>
+                <xsl:if test="$_error/ns1:ErrorReport/Msg">
+                    <pfx2:ErrorMsg>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </pfx2:ErrorMsg>
+                </xsl:if>
+            </pfx2:ErrorLogHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JDBC Query">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>356</pd:x>
+        <pd:y>178</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>select * from QUIZTEAMS</statement>
+            <QueryOutputCachedSchemaColumns>TEAMID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>TEAMNAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <oraObjects/>
+            <oraTables/>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>startLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Update</pd:from>
+        <pd:to>endLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>startLog</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>endLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>errorLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>errorLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>JDBC Query</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Query</pd:from>
+        <pd:to>JDBC Update</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

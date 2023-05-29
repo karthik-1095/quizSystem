@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd8"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd8"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="quizDetails" type="quizDetailType"/>
+	<xs:complexType name="quizDetailType">
+		<xs:sequence>
+			<xs:element ref="quizid"/>
+			<xs:element ref="quizname"/>
+			<xs:element ref="quizdate"/>
+			<xs:element ref="totalquestions"/>
+			<xs:element ref="totalparticipants"/>
+			<xs:element ref="totalvacancies"/>
+			<xs:element ref="totalrounds"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="quizid" type="xs:string"/>
+	<xs:element name="quizname" type="xs:string"/>
+	<xs:element name="quizdate" type="xs:string"/>
+	<xs:element name="totalquestions" type="xs:string"/>
+	<xs:element name="totalparticipants" type="xs:string"/>
+	<xs:element name="totalvacancies" type="xs:string"/>
+	<xs:element name="totalrounds" type="xs:string"/>
+</xs:schema>

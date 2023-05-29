@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <pd:name>userAuthenticationModule/registrationRestService.process</pd:name>
+    <pd:startName>HTTP Receiver</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="HTTP Receiver">
+        <pd:type>com.tibco.plugin.http.HTTPEventSource</pd:type>
+        <pd:resourceType>httppalette.httpEventSource</pd:resourceType>
+        <pd:x>106</pd:x>
+        <pd:y>69</pd:y>
+        <config>
+            <outputMode>String</outputMode>
+            <defaultEncoding>ISO8859_1</defaultEncoding>
+            <inputOutputVersion>5.3.0</inputOutputVersion>
+            <newMimeSupport>true</newMimeSupport>
+            <sharedChannel>/resources/HTTP Connection.sharedhttp</sharedChannel>
+            <parsePostData>false</parsePostData>
+            <customField/>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Accept" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Charset" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Encoding" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Length" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Connection" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>686</pd:endX>
+    <pd:endY>70</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1679551798709</pd:targetNamespace>
+    <pd:activity name="REST Dispatch and Reply">
+        <pd:type>com.tibco.plugin.json.rest.server.activities.RestAdapterActivity</pd:type>
+        <pd:resourceType>rest.activities.RestAdapter</pd:resourceType>
+        <pd:x>393</pd:x>
+        <pd:y>68</pd:y>
+        <config>
+            <eventSource>HTTP Receiver</eventSource>
+            <RestService>
+                <InnerService>
+                    <ns0:application xmlns:ns0="http://wadl.dev.java.net/2009/02" name="Application">
+                        <ns0:resources name="OnBoarding" base="http://localhost:5323/onboarding">
+                            <ns0:resource id="Registration" path="/registration">
+                                <ns0:doc/>
+                                <ns0:method id="registration" name="POST">
+                                    <ns0:doc/>
+                                    <ns0:request name="Request">
+                                        <ns0:representation mediaType="application/json"/>
+                                    </ns0:request>
+                                    <ns0:response name="Response" status="200">
+                                        <ns0:representation mediaType="application/xml"/>
+                                    </ns0:response>
+                                    <Binding process="/userAuthenticationModule/userRegistration.process">
+                                        <RESTResponseHeader>
+                                            <xsd:element name="Headers">
+                                                <xsd:complexType>
+                                                    <xsd:sequence>
+                                                        <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                                                    </xsd:sequence>
+                                                </xsd:complexType>
+                                            </xsd:element>
+                                        </RESTResponseHeader>
+                                        <Input-Binding xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+                                            <xsl:template xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+                                                <payload>
+                                                    <xsl:value-of select="$Input-Binding/params/Body/Text/content"/>
+                                                </payload>
+                                            </xsl:template>
+                                        </Input-Binding>
+                                        <Output-Binding xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5" xmlns:cust="java://CustomFunction.customfunction">
+                                            <xsl:template xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5" xmlns:cust="java://CustomFunction.customfunction" match="/*">
+                                                <RESTResponse>
+                                                    <asciiContent>
+                                                        <xsl:value-of select="tib:render-xml($End/pfx2:response)"/>
+                                                    </asciiContent>
+                                                </RESTResponse>
+                                            </xsl:template>
+                                        </Output-Binding>
+                                    </Binding>
+                                </ns0:method>
+                            </ns0:resource>
+                            <ns0:resource id="Login" path="/login">
+                                <ns0:doc/>
+                                <ns0:method id="login" name="GET">
+                                    <ns0:doc/>
+                                    <ns0:request name="Request">
+                                        <ns0:param name="username" style="query" required="true"/>
+                                        <ns0:param name="password" style="query" required="true"/>
+                                    </ns0:request>
+                                    <ns0:response name="Response0" status="200">
+                                        <ns0:representation mediaType="application/xml"/>
+                                        <ns0:representation mediaType="application/json"/>
+                                    </ns0:response>
+                                    <Binding process="/userAuthenticationModule/userLogin.process">
+                                        <RESTResponseHeader>
+                                            <xsd:element name="Headers">
+                                                <xsd:complexType>
+                                                    <xsd:sequence>
+                                                        <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                                                    </xsd:sequence>
+                                                </xsd:complexType>
+                                            </xsd:element>
+                                        </RESTResponseHeader>
+                                        <Input-Binding xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+                                            <xsl:template xmlns:ns2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd7" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" match="/*">
+                                                <ns2:userLogin>
+                                                    <ns2:username>
+                                                        <xsl:value-of select="$Input-Binding/params/query/username"/>
+                                                    </ns2:username>
+                                                    <ns2:password>
+                                                        <xsl:value-of select="$Input-Binding/params/query/password"/>
+                                                    </ns2:password>
+                                                </ns2:userLogin>
+                                            </xsl:template>
+                                        </Input-Binding>
+                                        <Output-Binding xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx3="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd7">
+                                            <xsl:template xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx3="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd7" match="/*">
+                                                <RESTResponse>
+                                                    <asciiContent>
+                                                        <xsl:value-of select="tib:render-xml($End/pfx2:response)"/>
+                                                    </asciiContent>
+                                                </RESTResponse>
+                                            </xsl:template>
+                                        </Output-Binding>
+                                    </Binding>
+                                </ns0:method>
+                            </ns0:resource>
+                        </ns0:resources>
+                    </ns0:application>
+                </InnerService>
+            </RestService>
+        </config>
+        <pd:inputBindings>
+            <ns0:ActivityInputClass xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/json">
+                <tmp>
+                    <xsl:value-of select="$HTTP-Receiver/ProcessStarterOutput/Method"/>
+                </tmp>
+            </ns0:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="startLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>249</pd:x>
+        <pd:y>60</pd:y>
+        <config>
+            <spawn>true</spawn>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns:LogExceptionHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userauthenticationmodule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'startLog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'success'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="'request payload'"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <xsl:if test="$HTTP-Receiver/ProcessStarterOutput/PostData">
+                    <ns:PAYLOAD>
+                        <xsl:value-of select="$HTTP-Receiver/ProcessStarterOutput/PostData"/>
+                    </ns:PAYLOAD>
+                </xsl:if>
+            </ns:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="endLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>538</pd:x>
+        <pd:y>66</pd:y>
+        <config>
+            <spawn>true</spawn>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns:LogExceptionHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userauthenticationmodule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'endlog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'success'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="'response payload'"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <ns:PAYLOAD>
+                    <xsl:value-of select="tib:render-xml($REST-Dispatch-and-Reply/RESTOutput/RESTResponse, true())"/>
+                </ns:PAYLOAD>
+            </ns:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>315</pd:x>
+        <pd:y>205</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="errorLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>433</pd:x>
+        <pd:y>205</pd:y>
+        <config>
+            <processName>/processes/errorLog.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <ns:ErrorLogHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userAuthenticationModule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProjectName"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'errorLog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'failed'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="'error message'"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                    <ns:ErrorCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </ns:ErrorCode>
+                </xsl:if>
+                <xsl:if test="$_error/ns1:ErrorReport/Msg">
+                    <ns:ErrorMsg>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </ns:ErrorMsg>
+                </xsl:if>
+            </ns:ErrorLogHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>HTTP Receiver</pd:from>
+        <pd:to>startLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>startLog</pd:from>
+        <pd:to>REST Dispatch and Reply</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>REST Dispatch and Reply</pd:from>
+        <pd:to>endLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>endLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>errorLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>errorLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

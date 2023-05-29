@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd16"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd16"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="quiQuestions" type="quizQuestionType"/>
+	<xs:complexType name="quizQuestionType">
+		<xs:sequence>
+			<xs:element ref="QUESTIONTEXT"/>
+			<xs:element ref="OPTIONA"/>
+			<xs:element ref="OPTIONB"/>
+			<xs:element ref="OPTIONC"/>
+			<xs:element ref="OPTIOND"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="QUESTIONTEXT" type="xs:string"/>
+	<xs:element name="OPTIONA" type="xs:string"/>
+	<xs:element name="OPTIONB" type="xs:string"/>
+	<xs:element name="OPTIONC" type="xs:string"/>
+	<xs:element name="OPTIOND" type="xs:string"/>
+</xs:schema>

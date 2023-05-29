@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd11"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd11"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="question" type="questionType"/>
+	<xs:complexType name="questionType">
+		<xs:sequence>
+			<xs:element ref="questiontext"/>
+			<xs:element ref="answer"/>
+			<xs:element ref="optionA"/>
+			<xs:element ref="optionB"/>
+			<xs:element ref="optionC"/>
+			<xs:element ref="optionD"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="questiontext" type="xs:string"/>
+	<xs:element name="answer" type="xs:string"/>
+	<xs:element name="optionA" type="xs:string"/>
+	<xs:element name="optionB" type="xs:string"/>
+	<xs:element name="optionC" type="xs:string"/>
+	<xs:element name="optionD" type="xs:string"/>
+	<xs:element name="questions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="question" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

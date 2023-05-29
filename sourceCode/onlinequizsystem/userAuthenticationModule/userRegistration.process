@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5" xmlns:cust="java://CustomFunction.customfunction">
+    <xsd:import namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5" schemaLocation="/schemas/userDetails.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" schemaLocation="/schemas/response.xsd"/>
+    <pd:name>userAuthenticationModule/userRegistration.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="payload" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>152</pd:startX>
+    <pd:startY>63</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="exists($_error/ns1:ErrorReport/Msg)">
+                <pfx2:response>
+                    <pfx2:responseMessage>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </pfx2:responseMessage>
+                    <pfx2:responseCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </pfx2:responseCode>
+                </pfx2:response>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="$JDBC-Update/jdbcUpdateActivityOutput/noOfUpdates=1">
+                        <pfx2:response>
+                            <pfx2:responseMessage>
+                                <xsl:value-of select="&quot;successfully registered&quot;"/>
+                            </pfx2:responseMessage>
+                            <pfx2:responseCode>
+                                <xsl:value-of select="&quot;200&quot;"/>
+                            </pfx2:responseCode>
+                        </pfx2:response>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:choose>
+                            <xsl:when test="count($JDBC-Query/resultSet/Record)>0">
+                                <pfx2:response>
+                                    <pfx2:responseMessage>
+                                        <xsl:value-of select="&quot;user already registered&quot;"/>
+                                    </pfx2:responseMessage>
+                                    <pfx2:responseCode>
+                                        <xsl:value-of select="&quot;1&quot;"/>
+                                    </pfx2:responseCode>
+                                </pfx2:response>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <pfx2:response>
+                                    <pfx2:responseMessage>
+                                        <xsl:value-of select="&quot;failed to register&quot;"/>
+                                    </pfx2:responseMessage>
+                                    <pfx2:responseCode>
+                                        <xsl:value-of select="&quot;100&quot;"/>
+                                    </pfx2:responseCode>
+                                </pfx2:response>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx2:response"/>
+    <pd:endX>752</pd:endX>
+    <pd:endY>67</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1681708148075</pd:targetNamespace>
+    <pd:activity name="startLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>248</pd:x>
+        <pd:y>60</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns:LogExceptionHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userAuthenticationModule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="'userRegistration'"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'startLog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'success'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="&quot;&quot;"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="&quot;logging&quot;"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <ns:PAYLOAD>
+                    <xsl:value-of select="$Start/payload"/>
+                </ns:PAYLOAD>
+            </ns:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>347</pd:x>
+        <pd:y>55</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityOutputEditor ref="pfx:userDetails"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/payload"/>
+                </jsonString>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="endLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>587</pd:x>
+        <pd:y>58</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns:LogExceptionHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userAuthenticationModule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="'userRegistration'"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'endlog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'success'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="'logging'"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <ns:PAYLOAD>
+                    <xsl:value-of select="tib:render-xml($Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails)"/>
+                </ns:PAYLOAD>
+            </ns:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>583</pd:x>
+        <pd:y>243</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="errorLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>743</pd:x>
+        <pd:y>242</pd:y>
+        <config>
+            <processName>/processes/errorLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns:ErrorLogHandler>
+                <ns:ApplictionName>
+                    <xsl:value-of select="'userAuthenticationModule'"/>
+                </ns:ApplictionName>
+                <ns:ProcessName>
+                    <xsl:value-of select="'user registration'"/>
+                </ns:ProcessName>
+                <ns:LogType>
+                    <xsl:value-of select="'errorLog'"/>
+                </ns:LogType>
+                <ns:status>
+                    <xsl:value-of select="'failure'"/>
+                </ns:status>
+                <ns:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </ns:CorrelationID>
+                <ns:MessageType>
+                    <xsl:value-of select="'errorMessage'"/>
+                </ns:MessageType>
+                <ns:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </ns:Timestamp>
+                <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                    <ns:ErrorCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </ns:ErrorCode>
+                </xsl:if>
+                <xsl:if test="$_error/ns1:ErrorReport/Msg">
+                    <ns:ErrorMsg>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </ns:ErrorMsg>
+                </xsl:if>
+            </ns:ErrorLogHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JDBC Update">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>504</pd:x>
+        <pd:y>56</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>INSERT INTO USERREGISTRATION (USERNAME, PASSWORD, EMAIL, CONTACTNUMBER)
+VALUES (?, ?, ?, ?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>USERNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>PASSWORD</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>EMAIL</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CONTACTNUMBER</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <USERNAME>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:username"/>
+                </USERNAME>
+                <PASSWORD>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:password"/>
+                </PASSWORD>
+                <EMAIL>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:email"/>
+                </EMAIL>
+                <CONTACTNUMBER>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:contactnumber"/>
+                </CONTACTNUMBER>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JDBC Query">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>443</pd:x>
+        <pd:y>158</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>select * from USERREGISTRATION where USERNAME=? and EMAIL=? and CONTACTNUMBER=?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>USERNAME</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>EMAIL</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>CONTACTNUMBER</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <QueryOutputCachedSchemaColumns>USERID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>USERNAME</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>PASSWORD</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>EMAIL</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>CONTACTNUMBER</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <oraObjects/>
+            <oraTables/>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <USERNAME>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:username"/>
+                </USERNAME>
+                <EMAIL>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:email"/>
+                </EMAIL>
+                <CONTACTNUMBER>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:contactnumber"/>
+                </CONTACTNUMBER>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Generate Error">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>341</pd:x>
+        <pd:y>243</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <pfx3:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;please enter valid details&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="101"/>
+                </messageCode>
+            </pfx3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>startLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>startLog</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>JDBC Query</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>cust:matchRegex($Parse-JSON/ns2:ActivityOutputClass/pfx:userDetails/pfx:email, '^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$')</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>endLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>errorLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>errorLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Update</pd:from>
+        <pd:to>endLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Query</pd:from>
+        <pd:to>JDBC Update</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>count($JDBC-Query/resultSet/Record)=0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Query</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>Generate Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

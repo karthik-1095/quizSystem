@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="response" type="responseType"/>
+	<xs:complexType name="responseType">
+		<xs:sequence>
+			<xs:element ref="responseMessage"/>
+			<xs:element ref="responseCode"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="responseMessage" type="xs:string"/>
+	<xs:element name="responseCode" type="xs:string"/>
+</xs:schema>

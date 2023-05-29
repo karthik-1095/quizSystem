@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd13"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd13"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="quizResult" type="quizResultType"/>
+	<xs:complexType name="quizResultType">
+		<xs:sequence>
+			<xs:element ref="quizID"/>
+			<xs:element ref="round"/>
+			<xs:element ref="userID"/>
+			<xs:element ref="marks"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="quizID" type="xs:string"/>
+	<xs:element name="marks" type="xs:string"/>
+	<xs:element name="userID" type="xs:string"/>
+	<xs:element name="round" type="xs:string"/>
+</xs:schema>

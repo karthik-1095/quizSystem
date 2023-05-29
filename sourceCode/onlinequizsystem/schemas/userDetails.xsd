@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd5"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="userDetails" type="userDetailsType"/>
+	<xs:complexType name="userDetailsType">
+		<xs:sequence>
+			<xs:element ref="username"/>
+			<xs:element ref="password"/>
+			<xs:element ref="email"/>
+			<xs:element ref="contactnumber"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="username" type="xs:string"/>
+	<xs:element name="password" type="xs:string"/>
+	<xs:element name="email" type="xs:string"/>
+	<xs:element name="contactnumber" type="xs:string"/>
+</xs:schema>

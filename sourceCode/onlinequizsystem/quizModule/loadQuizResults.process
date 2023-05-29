@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd13">
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" schemaLocation="/schemas/response.xsd"/>
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd13" schemaLocation="/schemas/quizResults.xsd"/>
+    <pd:name>quizModule/loadQuizResults.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType ref="pfx:quizResult"/>
+    <pd:startX>148</pd:startX>
+    <pd:startY>65</pd:startY>
+    <pd:returnBindings>
+        <pfx2:response>
+            <pfx2:responseMessage>
+                <xsl:value-of select="'quiz results successfully updates'"/>
+            </pfx2:responseMessage>
+            <pfx2:responseCode>
+                <xsl:value-of select="200"/>
+            </pfx2:responseCode>
+        </pfx2:response>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx2:response"/>
+    <pd:endX>739</pd:endX>
+    <pd:endY>63</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1682311870412</pd:targetNamespace>
+    <pd:activity name="JDBC Update">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>416</pd:x>
+        <pd:y>62</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>insert into TEMPQUIZRESULTS (QUIZID,USERID,ROUND,MARKS) values (?,?,?,?)</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>QUIZID</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>USERID</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ROUND</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>MARKS</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <QUIZID>
+                    <xsl:value-of select="$Start/pfx:quizResult/pfx:quizID"/>
+                </QUIZID>
+                <USERID>
+                    <xsl:value-of select="$Start/pfx:quizResult/pfx:userID"/>
+                </USERID>
+                <ROUND>
+                    <xsl:value-of select="$Start/pfx:quizResult/pfx:round"/>
+                </ROUND>
+                <MARKS>
+                    <xsl:value-of select="$Start/pfx:quizResult/pfx:marks"/>
+                </MARKS>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>JDBC Update</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>JDBC Update</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

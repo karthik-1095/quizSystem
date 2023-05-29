@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd10"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd10"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="quizDetails" type="quizDetailsType"/>
+	<xs:complexType name="quizDetailsType">
+		<xs:sequence>
+			<xs:element ref="quizname"/>
+			<xs:element ref="quizdate"/>
+			<xs:element ref="totalquestions"/>
+			<xs:element ref="totalparticipants"/>
+			<xs:element ref="totalvacancies"/>
+			<xs:element ref="totalrounds"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="quizname" type="xs:string"/>
+	<xs:element name="quizdate" type="xs:date"/>
+	<xs:element name="totalquestions" type="xs:int"/>
+	<xs:element name="totalparticipants" type="xs:int"/>
+	<xs:element name="totalvacancies" type="xs:int"/>
+	<xs:element name="totalrounds" type="xs:int"/>
+	<xs:element name="quiz">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="quizDetails" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd7"
+	 targetNamespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd7"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="userLogin" type="userLoginType"/>
+	<xs:complexType name="userLoginType">
+		<xs:sequence>
+			<xs:element ref="username"/>
+			<xs:element ref="password"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="username" type="xs:string"/>
+	<xs:element name="password" type="xs:string"/>
+</xs:schema>

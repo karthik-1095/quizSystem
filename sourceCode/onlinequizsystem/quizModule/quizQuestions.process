@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx4="http://www.eniquesolution.com/ESI_integartion/CommonFramework" xmlns:pfx3="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" xmlns:pfx2="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd11" xmlns:pfx="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd12">
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd12" schemaLocation="/schemas/getQuizQuestions.xsd"/>
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd6" schemaLocation="/schemas/response.xsd"/>
+    <xs:import xmlns:xs="http://www.w3.org/2001/XMLSchema" namespace="http://www.tibco.com/schemas/onlinequizsystem/schemas/Schema.xsd11" schemaLocation="/schemas/createQuestions.xsd"/>
+    <pd:name>quizModule/quizQuestions.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType ref="pfx:quizQuestions"/>
+    <pd:startX>132</pd:startX>
+    <pd:startY>66</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="exists($_error/ns1:ErrorReport/Msg)">
+                <pfx3:response>
+                    <pfx3:responseMessage>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </pfx3:responseMessage>
+                    <pfx3:responseCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </pfx3:responseCode>
+                </pfx3:response>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="count($JDBC-Query/resultSet/Record)>0">
+                        <pfx3:response>
+                            <pfx3:responseMessage>
+                                <xsl:value-of select="$Render-JSON/ns:ActivityOutputClass/jsonString"/>
+                            </pfx3:responseMessage>
+                            <pfx3:responseCode>
+                                <xsl:value-of select="200"/>
+                            </pfx3:responseCode>
+                        </pfx3:response>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <pfx3:response>
+                            <pfx3:responseMessage>
+                                <xsl:value-of select="'questions not found'"/>
+                            </pfx3:responseMessage>
+                            <pfx3:responseCode>
+                                <xsl:value-of select="100"/>
+                            </pfx3:responseCode>
+                        </pfx3:response>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx3:response"/>
+    <pd:endX>771</pd:endX>
+    <pd:endY>65</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1681979895769</pd:targetNamespace>
+    <pd:activity name="JDBC Query">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>327</pd:x>
+        <pd:y>64</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/resources/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>select * from QUESTIONS where QUIZID=? and ROUND=?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>QUIZID</parameterName>
+                    <dataType>INTEGER</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>ROUND</parameterName>
+                    <dataType>INTEGER</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <QueryOutputCachedSchemaColumns>QUIZID</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ROUND</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>2</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>NUMBER</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>QUESTIONTEXT</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>ANSWER</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPTIONA</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPTIONB</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPTIONC</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>OPTIOND</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>VARCHAR2</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <oraObjects/>
+            <oraTables/>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <QUIZID>
+                    <xsl:value-of select="$Start/pfx:quizQuestions/pfx:quizID"/>
+                </QUIZID>
+                <ROUND>
+                    <xsl:value-of select="$Start/pfx:quizQuestions/pfx:round"/>
+                </ROUND>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>524</pd:x>
+        <pd:y>66</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityInputEditor ref="pfx2:questions"/>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <pfx2:questions>
+                    <xsl:for-each select="$JDBC-Query/resultSet/Record">
+                        <pfx2:question>
+                            <pfx2:questiontext>
+                                <xsl:value-of select="QUESTIONTEXT"/>
+                            </pfx2:questiontext>
+                            <pfx2:answer>
+                                <xsl:value-of select="ANSWER"/>
+                            </pfx2:answer>
+                            <pfx2:optionA>
+                                <xsl:value-of select="OPTIONA"/>
+                            </pfx2:optionA>
+                            <pfx2:optionB>
+                                <xsl:value-of select="OPTIONB"/>
+                            </pfx2:optionB>
+                            <pfx2:optionC>
+                                <xsl:value-of select="OPTIONC"/>
+                            </pfx2:optionC>
+                            <pfx2:optionD>
+                                <xsl:value-of select="OPTIOND"/>
+                            </pfx2:optionD>
+                        </pfx2:question>
+                    </xsl:for-each>
+                </pfx2:questions>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>334</pd:x>
+        <pd:y>320</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="errorLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>617</pd:x>
+        <pd:y>314</pd:y>
+        <config>
+            <processName>/processes/errorLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx4:ErrorLogHandler>
+                <pfx4:ApplictionName>
+                    <xsl:value-of select="'quizModule'"/>
+                </pfx4:ApplictionName>
+                <pfx4:ProcessName>
+                    <xsl:value-of select="'setQuestions'"/>
+                </pfx4:ProcessName>
+                <pfx4:LogType>
+                    <xsl:value-of select="'error log'"/>
+                </pfx4:LogType>
+                <pfx4:status>
+                    <xsl:value-of select="'failure'"/>
+                </pfx4:status>
+                <pfx4:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx4:CorrelationID>
+                <pfx4:MessageType>
+                    <xsl:value-of select="'error message'"/>
+                </pfx4:MessageType>
+                <pfx4:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx4:Timestamp>
+                <xsl:if test="$_error/ns1:ErrorReport/MsgCode">
+                    <pfx4:ErrorCode>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/MsgCode"/>
+                    </pfx4:ErrorCode>
+                </xsl:if>
+                <xsl:if test="$_error/ns1:ErrorReport/Msg">
+                    <pfx4:ErrorMsg>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
+                    </pfx4:ErrorMsg>
+                </xsl:if>
+            </pfx4:ErrorLogHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="strartLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>240</pd:x>
+        <pd:y>185</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx4:LogExceptionHandler>
+                <pfx4:ApplictionName>
+                    <xsl:value-of select="'quizModule'"/>
+                </pfx4:ApplictionName>
+                <pfx4:ProcessName>
+                    <xsl:value-of select="'quizQuestions'"/>
+                </pfx4:ProcessName>
+                <pfx4:LogType>
+                    <xsl:value-of select="'startlog'"/>
+                </pfx4:LogType>
+                <pfx4:status>
+                    <xsl:value-of select="'success'"/>
+                </pfx4:status>
+                <pfx4:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx4:CorrelationID>
+                <pfx4:MessageType>
+                    <xsl:value-of select="'log message'"/>
+                </pfx4:MessageType>
+                <pfx4:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx4:Timestamp>
+                <pfx4:PAYLOAD>
+                    <xsl:value-of select="concat($Start/pfx:quizQuestions/pfx:quizID,', ',$Start/pfx:quizQuestions/pfx:round)"/>
+                </pfx4:PAYLOAD>
+            </pfx4:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="endLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>608</pd:x>
+        <pd:y>175</pd:y>
+        <config>
+            <processName>/processes/infoLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx4:LogExceptionHandler>
+                <pfx4:ApplictionName>
+                    <xsl:value-of select="'quizModule'"/>
+                </pfx4:ApplictionName>
+                <pfx4:ProcessName>
+                    <xsl:value-of select="'setQuestions'"/>
+                </pfx4:ProcessName>
+                <pfx4:LogType>
+                    <xsl:value-of select="'end log'"/>
+                </pfx4:LogType>
+                <pfx4:status>
+                    <xsl:value-of select="'success'"/>
+                </pfx4:status>
+                <pfx4:CorrelationID>
+                    <xsl:value-of select="''"/>
+                </pfx4:CorrelationID>
+                <pfx4:MessageType>
+                    <xsl:value-of select="'log message'"/>
+                </pfx4:MessageType>
+                <pfx4:Timestamp>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </pfx4:Timestamp>
+                <pfx4:PAYLOAD>
+                    <xsl:value-of select="$Render-JSON/ns:ActivityOutputClass/jsonString"/>
+                </pfx4:PAYLOAD>
+            </pfx4:LogExceptionHandler>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>strartLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JDBC Query</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>endLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>strartLog</pd:from>
+        <pd:to>JDBC Query</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>endLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>errorLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>errorLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
